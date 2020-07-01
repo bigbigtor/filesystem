@@ -7,7 +7,7 @@ pub struct Device {
 }
 
 impl Device {
-    const BLOCK_SIZE: u64 = 1024;
+    pub const BLOCK_SIZE: u64 = 1024; //bytes
 
     pub fn mount(path: &str) -> std::io::Result<Device> {
         Ok(Device {
