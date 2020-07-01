@@ -7,7 +7,7 @@ pub struct Device {
 }
 
 impl Device {
-    pub const BLOCK_SIZE: u64 = 1024; //bytes
+    pub const BLOCK_SIZE: u32 = 1024; //bytes
 
     pub fn mount(path: &str) -> std::io::Result<Device> {
         Ok(Device {
@@ -22,14 +22,14 @@ impl Device {
 
     pub fn write_block(&self, block: u64, buf: &[u8]) -> std::io::Result<()> {
         let mut f = self.file.lock().unwrap();
-        f.seek(SeekFrom::Start(block * Device::BLOCK_SIZE))?;
+        f.seek(SeekFrom::Start(block * Device::BLOCK_SIZE as u64))?;
         f.write_all(buf)?;
         Ok(())
     }
 
     pub fn read_block(&self, block: u64, buf: &mut [u8]) -> std::io::Result<()> {
         let mut f = self.file.lock().unwrap();
-        f.seek(SeekFrom::Start(block * Device::BLOCK_SIZE))?;
+        f.seek(SeekFrom::Start(block * Device::BLOCK_SIZE as u64))?;
         f.read_exact(buf)?;
         Ok(())
     }
