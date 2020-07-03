@@ -72,7 +72,7 @@ impl Superblock {
         let mask = 128 >> bit_offset; // 10000000 shifted bit_offset positions
         match value {
             1 => target_byte |= mask,
-            0 => target_byte &= mask,
+            0 => target_byte &= !mask,
             b => panic!("Invalid bit value: {}", b),
         }
         buf[byte_position as usize] = target_byte;
