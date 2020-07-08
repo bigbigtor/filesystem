@@ -70,11 +70,11 @@ impl Superblock {
     // The number of inodes will be total_blocks/2.
     fn inode_array_blocks(total_blocks: u16) -> u16 {
         let total_inodes = total_blocks / 2;
-        let array_size = total_inodes.wrapping_mul(INODE_SIZE);
-        if array_size % Device::BLOCK_SIZE == 0 {
-            array_size / Device::BLOCK_SIZE
+        let array_size = total_inodes as u32 * INODE_SIZE as u32;
+        if array_size % Device::BLOCK_SIZE as u32 == 0 {
+            (array_size / Device::BLOCK_SIZE as u32) as u16
         } else {
-            (array_size / Device::BLOCK_SIZE) + 1
+            (array_size / Device::BLOCK_SIZE as u32) as u16 + 1
         }
     }
 }

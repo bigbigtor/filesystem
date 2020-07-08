@@ -21,8 +21,13 @@ impl Bitmap {
 
     fn write_bit(device: &Device, value: u8, position: u16) -> std::io::Result<()> {
         let mut buf = [0u8; Device::BLOCK_SIZE as usize];
-        let block = (position / (Device::BLOCK_SIZE * 8) as u16) + 1;
-        device.read_block(block.into(), &mut buf)?;
+        Self::read_bitmap_block(device, position, &mut buf)?;
+        Self::set_bit(value, position, &mut buf);
+        Self::write_bitmap_block(device, position, &buf)?;
+        Ok(())
+    }
+
+    fn set_bit(value: u8, position: u16, buf: &mut [u8]) {
         let byte_position = (position % (Device::BLOCK_SIZE * 8)) / 8;
         let bit_offset = (position % (Device::BLOCK_SIZE * 8)) % 8;
         let mut target_byte = buf[byte_position as usize];
@@ -33,6 +38,20 @@ impl Bitmap {
             b => panic!("Invalid bit value: {}", b),
         }
         buf[byte_position as usize] = target_byte;
+    }
+
+    fn read_bitmap_block(
+        device: &Device,
+        position: u16,
+        mut buf: &mut [u8],
+    ) -> std::io::Result<()> {
+        let block = (position / (Device::BLOCK_SIZE * 8) as u16) + 1;
+        device.read_block(block.into(), &mut buf)?;
+        Ok(())
+    }
+
+    fn write_bitmap_block(device: &Device, position: u16, buf: &[u8]) -> std::io::Result<()> {
+        let block = (position / (Device::BLOCK_SIZE * 8) as u16) + 1;
         device.write_block(block.into(), &buf)?;
         Ok(())
     }
@@ -57,5 +76,14 @@ mod tests {
     fn size() {
         assert_eq!(Bitmap::size(8192), 1);
         assert_eq!(Bitmap::size(8500), 2);
+    }
+
+    #[test]
+    fn set_bit() {
+        let mut buf = [0u8; Device::BLOCK_SIZE as usize];
+        Bitmap::set_bit(1, 15, &mut buf);
+        assert_eq!(buf[1], 1);
+        Bitmap::set_bit(0, 15, &mut buf);
+        assert_eq!(buf[1], 0);
     }
 }
