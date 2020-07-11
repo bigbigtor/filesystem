@@ -4,13 +4,8 @@ use crate::superblock::Superblock;
 pub struct Bitmap;
 
 impl Bitmap {
-    pub fn init(device: &Device, total_blocks: u16) -> std::io::Result<()> {
+    pub fn init(device: &Device) -> std::io::Result<()> {
         let mut sb = Superblock::read(device)?;
-        let bitmap_size = Self::size(total_blocks);
-        let buf = vec![0u8; Device::BLOCK_SIZE as usize];
-        for i in 1..bitmap_size {
-            device.write_block(i.into(), &buf)?;
-        }
         for i in 0..sb.get_first_data_block() {
             Self::write_bit(&device, 1, i)?;
             sb.decrement_free_blocks();
