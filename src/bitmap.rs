@@ -7,7 +7,7 @@ impl Bitmap {
     pub fn init(device: &Device, total_blocks: u16) -> std::io::Result<()> {
         let mut sb = Superblock::read(device)?;
         let bitmap_size = Self::size(total_blocks);
-        let buf = [0u8; Device::BLOCK_SIZE as usize];
+        let buf = vec![0u8; Device::BLOCK_SIZE as usize];
         for i in 1..bitmap_size {
             device.write_block(i.into(), &buf)?;
         }
@@ -20,7 +20,7 @@ impl Bitmap {
     }
 
     fn write_bit(device: &Device, value: u8, position: u16) -> std::io::Result<()> {
-        let mut buf = [0u8; Device::BLOCK_SIZE as usize];
+        let mut buf = vec![0u8; Device::BLOCK_SIZE as usize];
         Self::read_bitmap_block(device, position, &mut buf)?;
         Self::set_bit(value, position, &mut buf);
         Self::write_bitmap_block(device, position, &buf)?;
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn set_bit() {
-        let mut buf = [0u8; Device::BLOCK_SIZE as usize];
+        let mut buf = vec![0u8; Device::BLOCK_SIZE as usize];
         Bitmap::set_bit(1, 15, &mut buf);
         assert_eq!(buf[1], 1);
         Bitmap::set_bit(0, 15, &mut buf);
