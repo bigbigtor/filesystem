@@ -1,5 +1,6 @@
 use crate::bitmap::Bitmap;
 use crate::device::Device;
+use crate::inode::Inode;
 use crate::superblock::Superblock;
 
 pub struct FileCore;
@@ -12,6 +13,7 @@ impl FileCore {
         }
         Superblock::init(device, total_blocks)?;
         Bitmap::init(device)?;
+        Inode::init_inode_array(device)?;
         Ok(())
     }
 }

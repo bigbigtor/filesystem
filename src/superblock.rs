@@ -66,6 +66,14 @@ impl Superblock {
         self.free_blocks -= 1;
     }
 
+    pub fn get_first_inode_block(&self) -> u16 {
+        self.first_inode_block
+    }
+
+    pub fn get_total_inodes(&self) -> u16 {
+        self.total_inodes
+    }
+
     // Returns the number of blocks used by the inode array.
     // The number of inodes will be total_blocks/2.
     fn inode_array_blocks(total_blocks: u16) -> u16 {
